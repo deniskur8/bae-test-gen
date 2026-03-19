@@ -1,0 +1,142 @@
+{
+  "mte_summary": "BPMS015 Validation for Subcontracted Requisitions (Peg/GI/Blank BP/Multi-line)",
+  "mte_labels": [
+    "Bizagi",
+    "Procurement"
+  ],
+  "test_cases": [
+    {
+      "summary": "Functional Test: Auto-Rejection for Missing Peg/GI Info",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition using a subcontracted item that lacks pegging or Goods Issue information. Submit the requisition for approval via BPMS015. Verify the system auto-rejects the request immediately and sends an email notification detailing the missing information.",
+        "expected_result": "Requisition is auto-rejected and rejection email with missing info reasons is sent."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition using a subcontracted item without peg or GI data",
+          "data": "None",
+          "expected_result": "Requisition created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Submit purchase requisition for approval via BPMS015",
+          "data": "None",
+          "expected_result": "System auto-rejects request and sends email notification"
+        }
+      ]
+    },
+    {
+      "summary": "Functional Test: Rejection after Buyer Review for Blank BP/EMP Supplier",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition with a subcontracted item having blank Business Partner or EMPloyee supplier data. Submit the requisition for approval and complete Buyer Review. Verify the system rejects the request after buyer review and sends an email notification.",
+        "expected_result": "Requisition rejected after buyer review with email notification regarding blank BP/EMP."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition using a subcontracted item with blank Business Partner or EMPloyee supplier",
+          "data": "None",
+          "expected_result": "Requisition created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Submit purchase requisition for approval and complete Buyer Review",
+          "data": "None",
+          "expected_result": "Request moves to BPMS015 workflow pending decision"
+        },
+        {
+          "step": 3,
+          "action": "Verify system rejects request after buyer review and email notification is received",
+          "data": "None",
+          "expected_result": "Requisition rejected and rejection email sent"
+        }
+      ]
+    },
+    {
+      "summary": "Functional Test: Rejection for SubConDefault Items Unlinked to Production Orders",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition using a subcontracted item configured as a default (SubConDefault) but not linked to any active production orders. Submit the requisition for approval via BPMS015. Verify the system rejects the request and sends an email notification about the unlinked item.",
+        "expected_result": "Requisition rejected and rejection email sent regarding missing link to production order."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition using a subcontracted item configured as SubConDefault without linked production order",
+          "data": "None",
+          "expected_result": "Requisition created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Submit purchase requisition for approval via BPMS015",
+          "data": "None",
+          "expected_result": "System rejects request and sends email notification"
+        }
+      ]
+    },
+    {
+      "summary": "Functional Test: Rejection for Multi-line Requisitions with Subcontracted Items",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a multi-line purchase requisition where at least one line is a subcontracted item. Submit the requisition for approval via BPMS015. Verify the system rejects the entire request and sends an email notification stating rejection due to multi-line condition with subcontracted items.",
+        "expected_result": "Requisition rejected and rejection email sent regarding multi-line subcontracted items."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create a multi-line purchase requisition containing at least one subcontracted item",
+          "data": "None",
+          "expected_result": "Requisition created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Submit the multi-line purchase requisition for approval via BPMS015",
+          "data": "None",
+          "expected_result": "System rejects request and sends email notification"
+        }
+      ]
+    },
+    {
+      "summary": "Regression Test: Happy Path Standard Purchase Requisition",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a standard purchase requisition with valid data (non-subcontracted item, valid peg/GI). Submit for approval through BPMS015. Complete Buyer Review and DOA to approve the PO. Verify Purchase Order is generated successfully.",
+        "expected_result": "Purchase order generated and approved without interruption."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create a standard purchase requisition with valid data",
+          "data": "None",
+          "expected_result": "Requisition created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval and verify BPMS015 accepts it",
+          "data": "None",
+          "expected_result": "Request moves to approval workflow"
+        },
+        {
+          "step": 3,
+          "action": "Run Buyer Work Queue (BWQ) and accept Purchase Requisition",
+          "data": "None",
+          "expected_result": "Requisition accepted and status changes to Converted"
+        },
+        {
+          "step": 4,
+          "action": "Verify Purchase Order is generated successfully",
+          "data": "None",
+          "expected_result": "Purchase Order created"
+        }
+      ]
+    }
+  ]
+}

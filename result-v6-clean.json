@@ -1,0 +1,273 @@
+{
+    "mte_summary": "BPMS015 Validation Additions for Subcontracted Requisitions",
+    "mte_labels": [
+        "Bizagi",
+        "Procurement"
+    ],
+    "test_cases": [
+        {
+            "summary": "Valid Subcontracted Requisition - Happy Path",
+            "test_type": "Regression",
+            "description": {
+                "scenario": "Create a production order, under Planning Line tab add task '341ARW1'. Go to Actions > Subcontracting > Generate Subcontracting Documents. Locate the purchase requisition listed in the Subcontracting Purchase Document. Submit PRQ for approval. Complete Buyer Review. PRQ is now approved. Release production order. Run BWQ and accept PRQ. Open purchase order, PO number found in Linked Requisition Line Data. Submit PO for approval. Complete DOA and supplier response.",
+                "expected_result": "Subcontracted purchase requisition and purchase order are successfully generated and approved."
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create a production order. Under Planning Line tab add task '341ARW1'.",
+                    "data": "None",
+                    "expected_result": "Production order created with subcontracting task"
+                },
+                {
+                    "step": 2,
+                    "action": "Go to Actions > Subcontracting > Generate Subcontracting Documents.",
+                    "data": "None",
+                    "expected_result": "Subcontracting documents generated"
+                },
+                {
+                    "step": 3,
+                    "action": "Locate purchase requisition in Subcontracting Purchase Document. Submit PRQ for approval.",
+                    "data": "None",
+                    "expected_result": "PRQ submitted for approval"
+                },
+                {
+                    "step": 4,
+                    "action": "Complete Buyer Review.",
+                    "data": "None",
+                    "expected_result": "Buyer Review completed. BPMS015 case completed"
+                },
+                {
+                    "step": 5,
+                    "action": "Release production order. Run BWQ and accept PRQ.",
+                    "data": "None",
+                    "expected_result": "PRQ is in Converted status"
+                },
+                {
+                    "step": 6,
+                    "action": "Open purchase order from Linked Requisition Line Data. Submit PO for approval.",
+                    "data": "None",
+                    "expected_result": "PO submitted for approval"
+                },
+                {
+                    "step": 7,
+                    "action": "Complete DOA and supplier response.",
+                    "data": "None",
+                    "expected_result": "PO is approved"
+                }
+            ]
+        },
+        {
+            "summary": "Single-line Standard Requisition - 137 PO Conversion",
+            "test_type": "Regression",
+            "description": {
+                "scenario": "Create a requisition with a single line and submit for approval. Complete the BPMS015 case and convert the requisition on the BWQ. Submit PO for approval. Complete DOA and supplier response.",
+                "expected_result": "BPMS015 case is completed. Requisition is converted into a 137 PO after running the BWQ and PO is approved."
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create a purchase requisition with 1 line.",
+                    "data": "None",
+                    "expected_result": "PRQ created"
+                },
+                {
+                    "step": 2,
+                    "action": "Submit for approval.",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 3,
+                    "action": "Complete Buyer Review.",
+                    "data": "None",
+                    "expected_result": "Buyer Review completed. BPMS015 case completed"
+                },
+                {
+                    "step": 4,
+                    "action": "Run BWQ and accept requisition.",
+                    "data": "None",
+                    "expected_result": "Requisition accepted"
+                },
+                {
+                    "step": 5,
+                    "action": "PRQ is in converted status. A 137 PO generated.",
+                    "data": "None",
+                    "expected_result": "137 PO generated"
+                },
+                {
+                    "step": 6,
+                    "action": "Open Purchase Order from Linked Requisition Line Data. Submit PO for approval.",
+                    "data": "None",
+                    "expected_result": "PO submitted for approval"
+                },
+                {
+                    "step": 7,
+                    "action": "Complete DOA and Supplier Response.",
+                    "data": "None",
+                    "expected_result": "PO is approved"
+                }
+            ]
+        },
+        {
+            "summary": "Subcontracted Requisition: Missing Peg/GI Information",
+            "test_type": "Functional",
+            "description": {
+                "scenario": "Create a Purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure pegging information is missing. Submit for approval.",
+                "expected_result": "Purchase requisition rejected due to missing info and email is received stating rejection and reasons."
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL.",
+                    "data": "None",
+                    "expected_result": "PRQ created"
+                },
+                {
+                    "step": 2,
+                    "action": "Ensure pegging information is missing.",
+                    "data": "None",
+                    "expected_result": "Pegging information is missing"
+                },
+                {
+                    "step": 3,
+                    "action": "Submit for approval.",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 4,
+                    "action": "Check email notification.",
+                    "data": "None",
+                    "expected_result": "Email stating purchase requisition is rejected due to PEG/GI info missing. BPMS015 case rejected."
+                }
+            ]
+        },
+        {
+            "summary": "Subcontracted Requisition: Blank BP or EMPloyee Supplier",
+            "test_type": "Functional",
+            "description": {
+                "scenario": "Create a Purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure supplier business partner is blank or set to Employee. Submit for approval and complete Buyer Review.",
+                "expected_result": "Purchase requisition rejected after buyer review and email is received stating rejection and reasons."
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL.",
+                    "data": "None",
+                    "expected_result": "PRQ created"
+                },
+                {
+                    "step": 2,
+                    "action": "Ensure supplier business partner is blank or EMPloyee.",
+                    "data": "None",
+                    "expected_result": "Supplier field is empty"
+                },
+                {
+                    "step": 3,
+                    "action": "Submit for approval.",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 4,
+                    "action": "Complete Buyer Review step.",
+                    "data": "None",
+                    "expected_result": "Buyer Review completed. BPMS015 case rejected."
+                },
+                {
+                    "step": 5,
+                    "action": "Check email notification.",
+                    "data": "None",
+                    "expected_result": "Email received stating requisition rejected due to blank BP."
+                }
+            ]
+        },
+        {
+            "summary": "Subcontracted Requisition: SubConDefault Items Not Linked to Prod Orders",
+            "test_type": "Functional",
+            "description": {
+                "scenario": "Create a Purchase requisition using a SubConDefault item. Ensure it is not linked to an active production order. Submit for approval and complete Buyer Review.",
+                "expected_result": "Purchase requisition rejected due to lack of production order link and email is received stating rejection and reasons."
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create purchase requisition with item SubConDefault.",
+                    "data": "None",
+                    "expected_result": "PRQ created"
+                },
+                {
+                    "step": 2,
+                    "action": "Ensure item is not linked to production order.",
+                    "data": "None",
+                    "expected_result": "No production order link found"
+                },
+                {
+                    "step": 3,
+                    "action": "Submit for approval.",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 4,
+                    "action": "Complete Buyer Review step.",
+                    "data": "None",
+                    "expected_result": "Buyer Review completed. BPMS015 case rejected."
+                },
+                {
+                    "step": 5,
+                    "action": "Check email notification.",
+                    "data": "None",
+                    "expected_result": "Email received stating requisition rejected due to missing Prod Order link."
+                }
+            ]
+        },
+        {
+            "summary": "Multi-line Requisition with Subcontracted Items",
+            "test_type": "Functional",
+            "description": {
+                "scenario": "Create a Purchase requisition using multiple lines containing subcontracted items (ZZZSPL-SUBCON-*). Ensure all lines have valid items. Submit for approval and complete Buyer Review.",
+                "expected_result": "Purchase requisition rejected due to multi-line subcontracted status and email is received stating rejection and reasons."
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create purchase requisition with multiple lines using subcontracted items.",
+                    "data": "None",
+                    "expected_result": "PRQ created with multiple lines"
+                },
+                {
+                    "step": 2,
+                    "action": "Ensure all lines are valid subcontracted items (ZZZSPL-).*.",
+                    "data": "None",
+                    "expected_result": "Requisition contains only subcontracted lines"
+                },
+                {
+                    "step": 3,
+                    "action": "Submit for approval.",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 4,
+                    "action": "Complete Buyer Review step.",
+                    "data": "None",
+                    "expected_result": "Buyer Review completed. BPMS015 case rejected."
+                },
+                {
+                    "step": 5,
+                    "action": "Check email notification.",
+                    "data": "None",
+                    "expected_result": "Email received stating requisition rejected due to multi-line sub-con status."
+                }
+            ]
+        }
+    ]
+}

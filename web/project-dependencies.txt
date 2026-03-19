@@ -1,0 +1,175 @@
+Test Gen - Full Dependency Review
+==================================
+
+Project:      bae-test-gen
+Stack:        Python (backend/model interaction) + TypeScript/React (web UI)
+Prepared by:  Denis Kursevicius
+Date:         19 March 2026
+
+
+OVERVIEW
+--------
+This project has two parts: a Python backend that talks to a locally
+hosted LLM via Ollama, and a React web front end for displaying the
+generated test cases. I've gone through everything and listed out all
+the dependencies, licences, and anything that might need a closer look
+for approval.
+
+Nothing here phones home or sends data externally. The LLM runs
+entirely on-premises via Ollama - no cloud API calls are made.
+
+
+=========================================================================
+PART 1: AI / MODEL LAYER (Python + Ollama)
+=========================================================================
+
+LOCAL LLM
+---------
+Model:        Qwen 3.5 (9B parameter variant)
+Developed by: Alibaba Cloud (Qwen team)
+Licence:      Apache-2.0
+Runs via:     Ollama (locally hosted, no cloud calls)
+Approval:     MEDIUM - worth flagging with the team. The model itself
+              is Apache-2.0 licenced and open-weight, but it is
+              developed by Alibaba Cloud (Chinese tech company). Some
+              organisations have policies around this. The model runs
+              fully offline with no telemetry or network calls - all
+              inference happens on our hardware. No data leaves the
+              machine.
+
+OLLAMA (model runtime)
+----------------------
+Software:     Ollama
+Purpose:      Runs the Qwen model locally and exposes a REST API on
+              localhost:11434 for the application to call
+Licence:      MIT
+Developed by: Ollama Inc (US-based, open source)
+Approval:     LOW - MIT licenced, widely used, runs entirely locally.
+              No data is sent externally.
+
+
+PYTHON MODULES
+--------------
+The Python script that calls the model uses two modules:
+
+Package       Licence      What it does                         Approval
+-------       -------      ------------                         --------
+ollama        MIT          Python client for the Ollama API.    Low
+                           Sends prompts to the local model
+                           and receives responses. All comms
+                           are to localhost only.
+
+json          n/a          Built-in Python standard library     None needed
+                           module. Parses JSON responses.
+                           Ships with Python itself.
+
+Python itself:
+  Version:    3.x (standard CPython distribution)
+  Licence:    PSF (Python Software Foundation) licence
+  Approval:   LOW - Python is an industry-standard language runtime
+              widely used across defence and government.
+
+
+=========================================================================
+PART 2: WEB FRONT END (TypeScript / React)
+=========================================================================
+
+This is a client-side single page app that displays the generated
+test cases. Built with Vite, styled with Tailwind CSS.
+
+
+RUNTIME DEPENDENCIES (ship in the final build)
+-----------------------------------------------
+
+Package                         Version    Licence      Approval Risk
+-------                         -------    -------      -------------
+react                           19.2.0     MIT          Low
+react-dom                       19.2.0     MIT          Low
+tailwindcss                     4.2.1      MIT          Low
+@tailwindcss/vite               4.2.1      MIT          Low
+@radix-ui/react-dialog          1.1.15     MIT          Low
+@radix-ui/react-scroll-area     1.2.10     MIT          Low
+@radix-ui/react-select          2.2.6      MIT          Low
+@radix-ui/react-separator       1.1.8      MIT          Low
+@radix-ui/react-slot            1.2.4      MIT          Low
+@radix-ui/react-tooltip         1.2.8      MIT          Low
+lucide-react                    0.577.0    ISC          Low
+sonner                          2.0.7      MIT          Low
+class-variance-authority        0.7.1      Apache-2.0   Low
+clsx                            2.1.1      MIT          Low
+tailwind-merge                  3.5.0      MIT          Low
+
+
+DEVELOPMENT DEPENDENCIES (build/lint tooling only - not deployed)
+-----------------------------------------------------------------
+
+Package                         Version    Licence      Approval Risk
+-------                         -------    -------      -------------
+typescript                      5.9.3      Apache-2.0   Low
+vite                            7.3.1      MIT          Low
+@vitejs/plugin-react            5.1.1      MIT          Low
+eslint                          9.39.1     MIT          Low
+@eslint/js                      9.39.1     MIT          Low
+eslint-plugin-react-hooks       7.0.1      MIT          Low
+eslint-plugin-react-refresh     0.4.24     MIT          Low
+typescript-eslint               8.48.0     MIT          Low
+globals                         16.5.0     MIT          Low
+@types/node                     25.4.0     MIT          Low
+@types/react                    19.2.7     MIT          Low
+@types/react-dom                19.2.3     MIT          Low
+
+
+=========================================================================
+LICENCE SUMMARY (all components)
+=========================================================================
+
+MIT:          26 packages  -  Very permissive, no restrictions on use.
+                              Generally fine for commercial/internal use.
+
+Apache-2.0:   4 items      -  Permissive, includes patent grant clause.
+               (typescript, class-variance-authority,
+                Qwen 3.5 model, Ollama)
+
+ISC:           1 package   -  Functionally identical to MIT. No concerns.
+               (lucide-react)
+
+PSF:           1 item      -  Python language runtime. Standard.
+               (Python)
+
+
+=========================================================================
+THINGS WORTH FLAGGING
+=========================================================================
+
+1. Qwen 3.5 model (Alibaba Cloud) - this is probably the main one to
+   check. It's Apache-2.0 licenced and fully open-weight, and it runs
+   completely offline on our own hardware with zero network calls. But
+   given it's developed by Alibaba Cloud, it's worth checking whether
+   we need sign-off on using software from that vendor. For what it's
+   worth, the model weights are publicly available and auditable, and
+   the Apache-2.0 licence is the same one used by TypeScript
+   (Microsoft) and many other tools we already use.
+
+2. Everything runs locally. Ollama serves the model on localhost. The
+   web app runs in the browser. No data leaves the machine at any
+   point. There are no cloud API calls, no telemetry, and no external
+   service dependencies.
+
+3. All software licences are permissive (MIT / Apache-2.0 / ISC / PSF).
+   None are copyleft (e.g. GPL), so there's no obligation to
+   open-source any of our own code.
+
+4. Apache-2.0 licenced items (TypeScript, class-variance-authority,
+   Ollama, Qwen 3.5) - if we already have blanket approval for
+   Apache-2.0 then these should be straightforward.
+
+5. Dev dependencies are build-time only and never touch end-user
+   machines or production environments.
+
+6. React (Meta), TypeScript (Microsoft), and Tailwind CSS are all
+   industry-standard frameworks widely used across defence and
+   government projects.
+
+
+Let me know if you need more detail on any specific package or if
+there's a particular format the approval team prefers.

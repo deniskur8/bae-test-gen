@@ -1,0 +1,274 @@
+{
+  "mte_summary": "BPMS015 Validation for Subcontracted Requisitions",
+  "mte_labels": [
+    "Bizagi",
+    "Procurement"
+  ],
+  "test_cases": [
+    {
+      "summary": "Regression: Standard Cost Purchase Requisition - 137 PO Conversion",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Verify that standard cost purchase requisitions continue to flow through BPMS015 without interruption, ensuring the change request does not break existing functionality.",
+        "expected_result": "Cost purchase requisition approved and converted to 137 series PO successfully"
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Go to Purchase requisition session (tdpur2600m000) and click new. Maintain header with buyer and business agreement -> PRQ header created",
+          "data": "None",
+          "expected_result": "PRQ header created"
+        },
+        {
+          "step": 2,
+          "action": "Create new requisition line. Input cost item (ZZZCST), quantity, price, confirmed receipt date, business partner, pegging information (Project and Activity). Save -> Requisition line created",
+          "data": "None",
+          "expected_result": "Requisition line created"
+        },
+        {
+          "step": 3,
+          "action": "Click on Actions and submit PRQ for approval -> PRQ submitted for approval",
+          "data": "None",
+          "expected_result": "PRQ submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Check email inbox for buyer review email. Go to Bizagi and input case number from email -> Bizagi case opened",
+          "data": "None",
+          "expected_result": "Bizagi case opened"
+        },
+        {
+          "step": 5,
+          "action": "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed. Case sent for DOA approval",
+          "data": "None",
+          "expected_result": "Buyer Review completed"
+        },
+        {
+          "step": 6,
+          "action": "Complete DOA approval. Refresh Bizagi case and verify case completed with no outstanding actions -> BPMS015 case completed",
+          "data": "None",
+          "expected_result": "BPMS015 case completed"
+        },
+        {
+          "step": 7,
+          "action": "Go back to Infor LN and refresh purchase requisition screen. Verify PRQ status is Approved -> PRQ status is Approved",
+          "data": "None",
+          "expected_result": "PRQ status is Approved"
+        },
+        {
+          "step": 8,
+          "action": "Go to Bizagi and create a BWQ (BPMS002.1) case. Select buyer, tick purchase requisition tick box, click next -> BWQ case created",
+          "data": "None",
+          "expected_result": "BWQ case created"
+        },
+        {
+          "step": 9,
+          "action": "Select the purchase requisition with correct number. Select transfer against that record, click next -> Transfer initiated",
+          "data": "None",
+          "expected_result": "Transfer initiated"
+        },
+        {
+          "step": 10,
+          "action": "Refresh the Bizagi case and verify completed with no actions remaining -> BWQ case completed",
+          "data": "None",
+          "expected_result": "BWQ case completed"
+        },
+        {
+          "step": 11,
+          "action": "Go back to Infor LN and refresh PRQ. Verify status is Converted. Click requisition line > References > Linked Requisition Line Data (tdpur2502s000) -> PRQ converted. 137 PO number displayed",
+          "data": "None",
+          "expected_result": "PRQ converted. 137 PO number displayed"
+        },
+        {
+          "step": 12,
+          "action": "Open purchase order from (tdpur4100m000). Maintain and submit PO for approval -> PO submitted for approval",
+          "data": "None",
+          "expected_result": "PO submitted for approval"
+        },
+        {
+          "step": 13,
+          "action": "Complete DOA and supplier response. Open PO in Bizagi BPMS016, complete supplier response ACC -> PO is approved",
+          "data": "None",
+          "expected_result": "PO is approved"
+        }
+      ]
+    },
+    {
+      "summary": "Functional: Subcontracted Requisition Missing Peg/GI Information",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Verify that BPMS015 now auto-rejects subcontracted purchase requisitions that lack pegging or GI information, preventing invalid data from progressing.",
+        "expected_result": "Purchase requisition auto-rejected by BPMS015 due to missing peg/GI info. Rejection email received."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with subcontracted item ZZZSPL-SUBCON-S09-TOOL -> PRQ created",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure pegging and GI information fields are blank or missing for the requisition line -> Peg/GI information confirmed missing",
+          "data": "None",
+          "expected_result": "Peg/GI information confirmed missing"
+        },
+        {
+          "step": 3,
+          "action": "Submit PRQ for approval -> Submitted for approval. BPMS015 triggered",
+          "data": "None",
+          "expected_result": "BPMS015 triggered"
+        },
+        {
+          "step": 4,
+          "action": "BPMS015 performs auto-rejection check. Requisition is auto-rejected due to missing Peg/GI information -> BPMS015 case rejected",
+          "data": "None",
+          "expected_result": "BPMS015 case rejected"
+        },
+        {
+          "step": 5,
+          "action": "Check email inbox for rejection notification stating purchase requisition rejected due to PEG/GI info missing -> Rejection email received with reason",
+          "data": "None",
+          "expected_result": "Rejection email received with reason"
+        }
+      ]
+    },
+    {
+      "summary": "Functional: Subcontracted Requisition Blank BP or Employee Supplier",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Verify that BPMS015 rejects subcontracted requisitions where the business partner field is blank or contains an employee supplier after buyer review.",
+        "expected_result": "Purchase requisition rejected by BPMS015 due to blank BP or Employee supplier. Rejection email received."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with subcontracted item ZZZSPL-SUBCON-VALVE",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Maintain header and line details but leave Business Partner field blank -> BP field confirmed blank",
+          "data": "None",
+          "expected_result": "BP field confirmed blank"
+        },
+        {
+          "step": 3,
+          "action": "Submit PRQ for approval -> Submitted for approval. Buyer review email received",
+          "data": "None",
+          "expected_result": "Buyer review email received"
+        },
+        {
+          "step": 4,
+          "action": "Go to Bizagi and open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed",
+          "data": "None",
+          "expected_result": "Buyer Review completed"
+        },
+        {
+          "step": 5,
+          "action": "BPMS015 performs validation check on Business Partner field. Requisition is rejected due to blank BP -> BPMS015 case rejected",
+          "data": "None",
+          "expected_result": "BPMS015 case rejected"
+        },
+        {
+          "step": 6,
+          "action": "Check email inbox for rejection notification stating purchase requisition rejected due to missing Business Partner -> Rejection email received with reason",
+          "data": "None",
+          "expected_result": "Rejection email received with reason"
+        }
+      ]
+    },
+    {
+      "summary": "Functional: SubConDefault Items Not Linked to Production Orders",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Verify that BPMS015 rejects subcontracted requisitions using default items (SubConDefault) that are not linked to active production orders.",
+        "expected_result": "Purchase requisition rejected by BPMS015 due to SubConDefault item not linked to production order. Rejection email received."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with subcontracted item ZZZSPL-SUBCON-DEFAULT",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure no corresponding production order exists in tisfc0501m000 for this item -> Production order link confirmed missing",
+          "data": "None",
+          "expected_result": "Production order link confirmed missing"
+        },
+        {
+          "step": 3,
+          "action": "Submit PRQ for approval -> Submitted for approval. BPMS015 triggered",
+          "data": "None",
+          "expected_result": "BPMS015 triggered"
+        },
+        {
+          "step": 4,
+          "action": "BPMS015 performs validation check on production order linkage. Requisition is rejected due to missing link -> BPMS015 case rejected",
+          "data": "None",
+          "expected_result": "BPMS015 case rejected"
+        },
+        {
+          "step": 5,
+          "action": "Check email inbox for rejection notification stating purchase requisition rejected due to SubConDefault item not linked -> Rejection email received with reason",
+          "data": "None",
+          "expected_result": "Rejection email received with reason"
+        }
+      ]
+    },
+    {
+      "summary": "Functional: Multi-line Requisition with Subcontracted Items",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Verify that BPMS015 rejects multi-line purchase requisitions containing subcontracted items, regardless of other line validity.",
+        "expected_result": "Purchase requisition rejected by BPMS015 due to multi-line requisition containing subcontracted items. Rejection email received."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create new purchase requisition with multiple lines -> PRQ header created",
+          "data": "None",
+          "expected_result": "PRQ header created"
+        },
+        {
+          "step": 2,
+          "action": "Add first line with standard cost item ZZZCST and save -> First line created",
+          "data": "None",
+          "expected_result": "First line created"
+        },
+        {
+          "step": 3,
+          "action": "Add second line with subcontracted item ZZZSPL-SUBCON-MIXED and save -> Second line created",
+          "data": "None",
+          "expected_result": "Second line created"
+        },
+        {
+          "step": 4,
+          "action": "Submit PRQ for approval -> Submitted for approval. BPMS015 triggered",
+          "data": "None",
+          "expected_result": "BPMS015 triggered"
+        },
+        {
+          "step": 5,
+          "action": "BPMS015 performs validation check on multi-line structure containing subcontracted items. Requisition is rejected -> BPMS015 case rejected",
+          "data": "None",
+          "expected_result": "BPMS015 case rejected"
+        },
+        {
+          "step": 6,
+          "action": "Check email inbox for rejection notification stating purchase requisition rejected due to multi-line with subcontracted items -> Rejection email received with reason",
+          "data": "None",
+          "expected_result": "Rejection email received with reason"
+        }
+      ]
+    }
+  ]
+}

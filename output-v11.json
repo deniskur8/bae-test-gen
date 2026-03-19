@@ -1,0 +1,342 @@
+{
+  "mte_summary": "Remove ability to add rows in Buyer Work Queue requisitions table (MDR-1071)",
+  "mte_labels": [
+    "Bizagi",
+    "Procurement",
+    "Buyer Work Queue",
+    "BPMS002.1"
+  ],
+  "test_cases": [
+    {
+      "summary": "Regression: Standard Cost Purchase Requisition - 137 PO Conversion",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a standard cost purchase requisition, approve via BPMS015, convert via BPMS002.1, and verify PO conversion to 137 series.",
+        "expected_result": "Cost purchase requisition approved and converted to 137 series PO successfully"
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Go to Purchase requisition session (tdpur2600m000) and click new.",
+          "data": "None",
+          "expected_result": "New purchase requisition header created"
+        },
+        {
+          "step": 2,
+          "action": "Maintain header with buyer and business agreement. Create new requisition line with cost item (ZZZCST), quantity, price, confirmed receipt date, business partner, and pegging information (Project and Activity). Save.",
+          "data": "None",
+          "expected_result": "Requisition line created"
+        },
+        {
+          "step": 3,
+          "action": "Click on Actions and submit PRQ for approval.",
+          "data": "None",
+          "expected_result": "PRQ submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Check email inbox for buyer review email. Go to Bizagi and input case number from email.",
+          "data": "None",
+          "expected_result": "Bizagi case opened"
+        },
+        {
+          "step": 5,
+          "action": "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next.",
+          "data": "None",
+          "expected_result": "Buyer Review completed. Case sent for DOA approval"
+        },
+        {
+          "step": 6,
+          "action": "Complete DOA approval. Refresh Bizagi case and verify case completed with no outstanding actions.",
+          "data": "None",
+          "expected_result": "BPMS015 case completed"
+        },
+        {
+          "step": 7,
+          "action": "Go back to Infor LN and refresh purchase requisition screen. Verify PRQ status is Approved.",
+          "data": "None",
+          "expected_result": "PRQ status is Approved"
+        },
+        {
+          "step": 8,
+          "action": "Go to Bizagi and create a BWQ (BPMS002.1) case. Select buyer, tick purchase requisition tick box, click next.",
+          "data": "None",
+          "expected_result": "BWQ case created"
+        },
+        {
+          "step": 9,
+          "action": "Select the purchase requisition with correct number. Select transfer against that record, click next.",
+          "data": "None",
+          "expected_result": "Transfer initiated"
+        },
+        {
+          "step": 10,
+          "action": "Refresh the Bizagi case and verify completed with no actions remaining.",
+          "data": "None",
+          "expected_result": "BWQ case completed"
+        },
+        {
+          "step": 11,
+          "action": "Go back to Infor LN and refresh PRQ. Verify status is Converted. Click requisition line > References > Linked Requisition Line Data (tdpur2502s000).",
+          "data": "None",
+          "expected_result": "PRQ converted. 137 PO number displayed"
+        },
+        {
+          "step": 12,
+          "action": "Open purchase order from (tdpur4100m000). Maintain and submit PO for approval.",
+          "data": "None",
+          "expected_result": "PO submitted for approval"
+        },
+        {
+          "step": 13,
+          "action": "Complete DOA and supplier response. Open PO in Bizagi BPMS016, complete supplier response ACC.",
+          "data": "None",
+          "expected_result": "PO is approved"
+        },
+        {
+          "step": 14,
+          "action": "Refresh PO screen and verify final status is Approved.",
+          "data": "None",
+          "expected_result": "PO status is Approved"
+        },
+        {
+          "step": 15,
+          "action": "Verify no error messages regarding row addition appear in BWQ session.",
+          "data": "None",
+          "expected_result": "No row addition capability observed"
+        }
+      ]
+    },
+    {
+      "summary": "Regression: Subcontracted Purchase Requisition - 137 PO Conversion",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a subcontracted purchase requisition, approve via BPMS015, convert via BPMS002.1, and verify PO conversion to 137 series.",
+        "expected_result": "Subcontracted purchase requisition approved and converted to 137 series PO successfully"
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Go to Purchase requisition session (tdpur2600m000) and click new.",
+          "data": "None",
+          "expected_result": "New purchase requisition header created"
+        },
+        {
+          "step": 2,
+          "action": "Create new requisition line with subcontracted item (ZZZSPL-SUBCON-*), quantity, price, confirmed receipt date, business partner, and pegging information (Project and Activity). Save.",
+          "data": "None",
+          "expected_result": "Requisition line created"
+        },
+        {
+          "step": 3,
+          "action": "Click on Actions and submit PRQ for approval.",
+          "data": "None",
+          "expected_result": "PRQ submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Check email inbox for buyer review email. Go to Bizagi and input case number from email.",
+          "data": "None",
+          "expected_result": "Bizagi case opened"
+        },
+        {
+          "step": 5,
+          "action": "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next.",
+          "data": "None",
+          "expected_result": "Buyer Review completed. Case sent for DOA approval"
+        },
+        {
+          "step": 6,
+          "action": "Complete DOA approval. Refresh Bizagi case and verify case completed with no outstanding actions.",
+          "data": "None",
+          "expected_result": "BPMS015 case completed"
+        },
+        {
+          "step": 7,
+          "action": "Go back to Infor LN and refresh purchase requisition screen. Verify PRQ status is Approved.",
+          "data": "None",
+          "expected_result": "PRQ status is Approved"
+        },
+        {
+          "step": 8,
+          "action": "Go to Bizagi and create a BWQ (BPMS002.1) case. Select buyer, tick purchase requisition tick box, click next.",
+          "data": "None",
+          "expected_result": "BWQ case created"
+        },
+        {
+          "step": 9,
+          "action": "Select the purchase requisition with correct number. Select transfer against that record, click next.",
+          "data": "None",
+          "expected_result": "Transfer initiated"
+        },
+        {
+          "step": 10,
+          "action": "Refresh the Bizagi case and verify completed with no actions remaining.",
+          "data": "None",
+          "expected_result": "BWQ case completed"
+        },
+        {
+          "step": 11,
+          "action": "Go back to Infor LN and refresh PRQ. Verify status is Converted. Click requisition line > References > Linked Requisition Line Data (tdpur2502s000).",
+          "data": "None",
+          "expected_result": "PRQ converted. 137 PO number displayed"
+        },
+        {
+          "step": 12,
+          "action": "Open purchase order from (tdpur4100m000). Maintain and submit PO for approval.",
+          "data": "None",
+          "expected_result": "PO submitted for approval"
+        },
+        {
+          "step": 13,
+          "action": "Complete DOA and supplier response. Open PO in Bizagi BPMS016, complete supplier response ACC.",
+          "data": "None",
+          "expected_result": "PO is approved"
+        },
+        {
+          "step": 14,
+          "action": "Refresh PO screen and verify final status is Approved.",
+          "data": "None",
+          "expected_result": "PO status is Approved"
+        },
+        {
+          "step": 15,
+          "action": "Verify no error messages regarding row addition appear in BWQ session.",
+          "data": "None",
+          "expected_result": "No row addition capability observed"
+        }
+      ]
+    },
+    {
+      "summary": "Functional: Buyer Work Queue - Attempt to Add New Row",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Attempt to add a new row to the Buyer Work Queue requisitions table to process a requisition not originally in the table.",
+        "expected_result": "System prevents adding new rows. No new row is created in the BWQ requisitions table."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Go to Buyer Work Queue session (BPMS002.1) in Bizagi.",
+          "data": "None",
+          "expected_result": "BWQ session opened"
+        },
+        {
+          "step": 2,
+          "action": "Verify a purchase requisition is already present in the table with status Approved.",
+          "data": "None",
+          "expected_result": "Existing requisition visible"
+        },
+        {
+          "step": 3,
+          "action": "Locate the button or action intended to add new rows in the BWQ requisitions table.",
+          "data": "None",
+          "expected_result": "Button identified or action available"
+        },
+        {
+          "step": 4,
+          "action": "Click the button to add a new row.",
+          "data": "None",
+          "expected_result": "System rejects the action or button is disabled"
+        },
+        {
+          "step": 5,
+          "action": "Verify that no new row appears in the requisitions table.",
+          "data": "None",
+          "expected_result": "No new row created"
+        },
+        {
+          "step": 6,
+          "action": "Refresh the BWQ screen.",
+          "data": "None",
+          "expected_result": "Screen refreshed"
+        },
+        {
+          "step": 7,
+          "action": "Verify the original requisition remains and no additional rows exist.",
+          "data": "None",
+          "expected_result": "Only original requisition visible"
+        },
+        {
+          "step": 8,
+          "action": "Check system logs or error messages for rejection reason.",
+          "data": "None",
+          "expected_result": "Error message indicating inability to add rows"
+        }
+      ]
+    },
+    {
+      "summary": "Functional: Buyer Work Queue - Process Existing Approved Requisition",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Process an existing approved requisition in the Buyer Work Queue to ensure normal flow is not impacted by the removal of the add row feature.",
+        "expected_result": "Existing approved requisition is successfully processed and transferred."
+      },
+      "steps": [
+        {
+          "step": 1,
+          "action": "Go to Buyer Work Queue session (BPMS002.1) in Bizagi.",
+          "data": "None",
+          "expected_result": "BWQ session opened"
+        },
+        {
+          "step": 2,
+          "action": "Select an existing purchase requisition with status Approved in the table.",
+          "data": "None",
+          "expected_result": "Requisition selected"
+        },
+        {
+          "step": 3,
+          "action": "Select the buyer for the requisition.",
+          "data": "None",
+          "expected_result": "Buyer selected"
+        },
+        {
+          "step": 4,
+          "action": "Click next to initiate the buyer review process.",
+          "data": "None",
+          "expected_result": "Buyer review initiated"
+        },
+        {
+          "step": 5,
+          "action": "Complete buyer review (RFx=No, Buyer review=Yes). Save and press Next.",
+          "data": "None",
+          "expected_result": "Buyer review completed"
+        },
+        {
+          "step": 6,
+          "action": "Complete DOA approval if applicable.",
+          "data": "None",
+          "expected_result": "DOA approved"
+        },
+        {
+          "step": 7,
+          "action": "Select transfer against the record.",
+          "data": "None",
+          "expected_result": "Transfer initiated"
+        },
+        {
+          "step": 8,
+          "action": "Click next to complete the transfer.",
+          "data": "None",
+          "expected_result": "Transfer completed"
+        },
+        {
+          "step": 9,
+          "action": "Refresh the BWQ case and verify completed with no actions remaining.",
+          "data": "None",
+          "expected_result": "BWQ case completed"
+        },
+        {
+          "step": 10,
+          "action": "Go back to Infor LN and verify PRQ status is Converted.",
+          "data": "None",
+          "expected_result": "PRQ status is Converted"
+        }
+      ]
+    }
+  ]
+}

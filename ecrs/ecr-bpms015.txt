@@ -1,0 +1,10 @@
+Title: BPMS015 skipping some validation for sub-con requisitions
+Labels: Bizagi, Procurement
+Components: BPMS015
+
+Description:
+Requirement/Issue: BPMS015 is currently skipping some validation checks for subcontracted purchase requisitions. Specifically, requisitions with missing peg/GI information or blank/EMPloyee business partners are not being caught during the approval workflow.
+
+Exact Change Required: Add validation in BPMS015 to check subcontracted requisitions for: (1) Missing peg/GI information - auto-reject with email notification, (2) Blank BP or EMPloyee supplier - reject after buyer review with email notification, (3) SubConDefault items not linked to production orders - reject with email notification, (4) Multi-line requisitions with subcontracted items - reject with email notification.
+
+Benefit: Prevents invalid subcontracted requisitions from progressing through the approval workflow.

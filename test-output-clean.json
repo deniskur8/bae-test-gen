@@ -1,0 +1,97 @@
+{
+    "mte_summary": "Auto-reject PRQs with inactive suppliers",
+    "mte_labels": [
+        "Procurement",
+        "BPMS015"
+    ],
+    "test_cases": [
+        {
+            "summary": "PRQ Auto-rejection for Inactive Supplier",
+            "test_type": "Functional",
+            "description": {
+                "scenario": "Create a purchase requisition with an inactive supplier business partner. Submit for approval. Check if PRQ is auto-rejected and email is sent to requester.",
+                "expected_result": "Purchase requisition is auto-rejected and requester receives email notification about inactive supplier"
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create purchase requisition with inactive supplier business partner",
+                    "data": "None",
+                    "expected_result": "Purchase requisition created"
+                },
+                {
+                    "step": 2,
+                    "action": "Submit for approval",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 3,
+                    "action": "Check if PRQ is auto-rejected and email is sent to requester",
+                    "data": "None",
+                    "expected_result": "PRQ is auto-rejected and requester receives email notification about inactive supplier"
+                }
+            ]
+        },
+        {
+            "summary": "Regression: PRQ Approval Flow with Active Supplier",
+            "test_type": "Regression",
+            "description": {
+                "scenario": "Create a purchase requisition with active supplier business partner. Submit for approval. Complete Buyer Review. Purchase requisition is now in approved status. Run Buyer Work Queue and accept Purchase Requisition. Purchase Requisition is now in converted status. Open Purchase Order from Linked Requisition Line Data. Submit PO for approval. Complete DOA and Supplier Response. PO is approved.",
+                "expected_result": "Purchase requisition is approved and converted to a purchase order successfully"
+            },
+            "preconditions": null,
+            "steps": [
+                {
+                    "step": 1,
+                    "action": "Create purchase requisition with active supplier business partner",
+                    "data": "None",
+                    "expected_result": "Purchase requisition created"
+                },
+                {
+                    "step": 2,
+                    "action": "Submit for approval",
+                    "data": "None",
+                    "expected_result": "Submitted for approval"
+                },
+                {
+                    "step": 3,
+                    "action": "Complete Buyer Review",
+                    "data": "None",
+                    "expected_result": "Buyer Review completed"
+                },
+                {
+                    "step": 4,
+                    "action": "Purchase requisition is now in approved status",
+                    "data": "None",
+                    "expected_result": "Purchase requisition is approved"
+                },
+                {
+                    "step": 5,
+                    "action": "Run Buyer Work Queue and accept Purchase Requisition",
+                    "data": "None",
+                    "expected_result": "Purchase Requisition is accepted"
+                },
+                {
+                    "step": 6,
+                    "action": "Purchase Requisition is now in converted status",
+                    "data": "None",
+                    "expected_result": "Purchase Requisition is converted"
+                },
+                {
+                    "step": 7,
+                    "action": "Open Purchase Order from Linked Requisition Line Data. Submit PO for approval",
+                    "data": "None",
+                    "expected_result": "PO submitted for approval"
+                },
+                {
+                    "step": 8,
+                    "action": "Complete DOA and Supplier Response. PO is approved.",
+                    "data": "None",
+                    "expected_result": "PO is approved"
+                }
+            ]
+        }
+    ]
+}

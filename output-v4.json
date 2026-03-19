@@ -1,0 +1,201 @@
+{
+    "mte_summary": "Validate BPMS015 Subcontracted Requisition Rejection Logic",
+    "mte_labels": [
+        "Bizagi",
+        "Procurement"
+    ],
+    "test_cases": [
+        {
+            "testCaseId": "101",
+            "scenario": "Verify standard non-subcontracted requisition flows through BPMS015 approval workflow without errors.",
+            "testType": "Regression",
+            "steps": [
+                {
+                    "action": "Login to ERP system and navigate to Purchase Requisition creation.",
+                    "data": "None",
+                    "expectedResult": "User successfully logged in and navigated to PRQ creation screen."
+                },
+                {
+                    "action": "Create a standard requisition (non-subcontracted) with valid data.",
+                    "data": "None",
+                    "expectedResult": "Standard PRQ created successfully without subcontracted item flags."
+                },
+                {
+                    "action": "Submit the requisition for approval via BPMS015.",
+                    "data": "None",
+                    "expectedResult": "Requisition submitted and moved to approval queue in Bizagi."
+                },
+                {
+                    "action": "Approve the requisition in the BPMS015 workflow.",
+                    "data": "None",
+                    "expectedResult": "Requisition approved without validation errors."
+                },
+                {
+                    "action": "Verify Purchase Order generation in ERP.",
+                    "data": "None",
+                    "expectedResult": "Purchase Order generated successfully without subcontracted item issues."
+                }
+            ]
+        },
+        {
+            "testCaseId": "102",
+            "scenario": "Verify valid subcontracted requisition with all required data (Peg, BP, Default Items linked) is approved correctly in BPMS015.",
+            "testType": "Regression",
+            "steps": [
+                {
+                    "action": "Login to ERP system and navigate to Purchase Requisition creation.",
+                    "data": "None",
+                    "expectedResult": "User successfully logged in and navigated to PRQ creation screen."
+                },
+                {
+                    "action": "Create a requisition marked as Subcontracted with valid Peg/GI info.",
+                    "data": "None",
+                    "expectedResult": "Requisition created with Subcontracted flag and valid Peg/GI data populated."
+                },
+                {
+                    "action": "Ensure Buyer Product (BP) and Employee supplier info are valid.",
+                    "data": "None",
+                    "expectedResult": "Buyer Product and Supplier Employee information validated and saved."
+                },
+                {
+                    "action": "Submit the subcontracted requisition for approval via BPMS015.",
+                    "data": "None",
+                    "expectedResult": "Requisition submitted and moved to approval queue in Bizagi."
+                },
+                {
+                    "action": "Approve the requisition in the BPMS015 workflow.",
+                    "data": "None",
+                    "expectedResult": "Requisition approved without validation errors."
+                }
+            ]
+        },
+        {
+            "testCaseId": "103",
+            "scenario": "Verify subcontracted requisition with missing Peg/GI information is rejected and email notification is sent.",
+            "testType": "Functional",
+            "steps": [
+                {
+                    "action": "Login to ERP system and navigate to Purchase Requisition creation.",
+                    "data": "None",
+                    "expectedResult": "User successfully logged in and navigated to PRQ creation screen."
+                },
+                {
+                    "action": "Create a subcontracted requisition and leave Peg/GI fields blank.",
+                    "data": "None",
+                    "expectedResult": "Requisition created in draft with missing Peg/GI data."
+                },
+                {
+                    "action": "Submit the requisition for approval via BPMS015.",
+                    "data": "None",
+                    "expectedResult": "Requisition submitted for validation."
+                },
+                {
+                    "action": "Check BPMS015 approval screen for error message.",
+                    "data": "None",
+                    "expectedResult": "System rejects the request with message: 'Peg/GI information required for subcontracted requisitions'."
+                },
+                {
+                    "action": "Verify email notification is sent to the requester.",
+                    "data": "None",
+                    "expectedResult": "Email received with rejection details and specific validation error."
+                }
+            ]
+        },
+        {
+            "testCaseId": "104",
+            "scenario": "Verify subcontracted requisition with blank Buyer Product (BP) or Employee supplier information is rejected and email notification is sent.",
+            "testType": "Functional",
+            "steps": [
+                {
+                    "action": "Login to ERP system and navigate to Purchase Requisition creation.",
+                    "data": "None",
+                    "expectedResult": "User successfully logged in and navigated to PRQ creation screen."
+                },
+                {
+                    "action": "Create a subcontracted requisition and leave Buyer Product/Supplier Employee fields blank.",
+                    "data": "None",
+                    "expectedResult": "Requisition created in draft with blank BP/Supplier info."
+                },
+                {
+                    "action": "Submit the requisition for approval via BPMS015.",
+                    "data": "None",
+                    "expectedResult": "Requisition submitted for validation."
+                },
+                {
+                    "action": "Check BPMS015 approval screen for error message.",
+                    "data": "None",
+                    "expectedResult": "System rejects the request with message: 'Buyer Product/Supplier info mandatory'."
+                },
+                {
+                    "action": "Verify email notification is sent to the requester.",
+                    "data": "None",
+                    "expectedResult": "Email received with rejection details and specific validation error."
+                }
+            ]
+        },
+        {
+            "testCaseId": "105",
+            "scenario": "Verify subcontracted requisition with SubConDefault items not linked to production orders is rejected and email notification is sent.",
+            "testType": "Functional",
+            "steps": [
+                {
+                    "action": "Login to ERP system and navigate to Purchase Requisition creation.",
+                    "data": "None",
+                    "expectedResult": "User successfully logged in and navigated to PRQ creation screen."
+                },
+                {
+                    "action": "Create a subcontracted requisition using SubConDefault items without production order linkage.",
+                    "data": "None",
+                    "expectedResult": "Requisition created with default items but without active production order link."
+                },
+                {
+                    "action": "Submit the requisition for approval via BPMS015.",
+                    "data": "None",
+                    "expectedResult": "Requisition submitted for validation."
+                },
+                {
+                    "action": "Check BPMS015 approval screen for error message.",
+                    "data": "None",
+                    "expectedResult": "System rejects the request with message: 'SubConDefault items must be linked to active production orders'."
+                },
+                {
+                    "action": "Verify email notification is sent to the requester.",
+                    "data": "None",
+                    "expectedResult": "Email received with rejection details and specific validation error."
+                }
+            ]
+        },
+        {
+            "testCaseId": "106",
+            "scenario": "Verify multi-line requisition containing subcontracted items is rejected and email notification is sent.",
+            "testType": "Functional",
+            "steps": [
+                {
+                    "action": "Login to ERP system and navigate to Purchase Requisition creation.",
+                    "data": "None",
+                    "expectedResult": "User successfully logged in and navigated to PRQ creation screen."
+                },
+                {
+                    "action": "Create a multi-line requisition with at least one line marked as Subcontracted.",
+                    "data": "None",
+                    "expectedResult": "Multi-line PRQ created with mixed standard and subcontracted items."
+                },
+                {
+                    "action": "Ensure Subcontracted lines are missing required validation data (Peg/GI/BP).",
+                    "data": "None",
+                    "expectedResult": "Requisition saved with valid lines and invalid subcontracted lines."
+                },
+                {
+                    "action": "Submit the multi-line requisition for approval via BPMS015.",
+                    "data": "None",
+                    "expectedResult": "Requisition submitted for validation."
+                },
+                {
+                    "action": "Check BPMS015 approval screen for error message.",
+                    "data": "None",
+                    "expectedResult": "System rejects the entire request with message regarding validation failure in line X."
+                }
+            ]
+        }
+    ]
+}

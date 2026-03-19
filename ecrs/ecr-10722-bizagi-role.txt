@@ -1,0 +1,60 @@
+Title: New DME - Business Support User Bizagi Role Required (MDR-1066)
+Labels: Bizagi, Security
+Components: BPMS002, BPMS015, BPMS016, BPMS019, BPMS026, BPMS042.2, BPMS058.1, BPMS058.2
+
+Description:
+Requirement/Issue: New DME - Business Support User Bizagi Role required (MDR-1066) similar access to CCBA1 but allowing users within the role to run user permissions screens and not view or edit the user administration screens.
+
+Exact Change Required:
+The following access is still required by the business and should be granted in the new role:
+
+Case management:
+- Run buyer workqueue
+- Re-send Exostar BOD
+- Re assign/cancel/process cases
+
+Queries:
+- BPMS002 - Buyer Work Queue
+- BPMS015 - Purchase Requisition search
+- BPMS016 - Purchase Order search
+- BPMS019 - Primary Signal Codes
+- BPMS026 - Purchase Order Supplier Response
+- BPMS042.2 - Inhouse metals PO create
+- BPMS058.1 Purchase Order search
+- BPMS058.2 Purchase Order search
+
+Reports - BAM reports
+Admin Process management - Asynchronous (check cases in Admin Review and action)
+                         - cases - re assign/cancel cases/process
+
+USERS:
+- Access to the user permissions report
+- New role name: CCBA3
+- Testing to include DMEs when development has reached prod test
+- New AD Group Name: ROLE-G-BAE-BZ03-XXX and ROLE-G-BAE-CCBA3-XXX (format confirmed by Sol Arch)
+- New Role in LN to be created under name BZ03 same as existing BZ01 role
+- LDAP filter change in Bizagi to include new AD group
+- Security model - new line required
+- Existing business users to be removed from CCBA1 and added to new CCBA3 AD Group (completed as part of a PES outside of this ECR)
+- Existing business users to be removed from BZ01 and added to new BZ03 LN Role (completed as part of a PES outside of this ECR)
+
+Users affected:
+- Jackie Speariett
+- Christopher Marsden
+- Stephen Bancroft
+- paul.whitehead3
+- zac.wareing
+- paul.d.west
+- steph.turner
+- les.carter
+
+New role BZ03 to be added to the SNOW Access request form (completed outside of this ECR)
+Helen Brown to be set approver for new role (completed outside of this ECR)
+
+Security Model Impact: New role created which will impact Security Model.
+Data Impact: N/A
+Health and Safety Impact: N/A
+
+Benefit: Segregation of Duty.
+Impact of No Change: DMEs from the Business can amend users access and impact DOA.
+Point of Contact / Sponsor: Andrew Parker

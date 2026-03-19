@@ -1,0 +1,282 @@
+{
+  "mte_summary": "BPMS015 validation for subcontracted purchase requisitions",
+  "mte_labels": [
+    "Bizagi",
+    "Procurement"
+  ],
+  "test_cases": [
+    {
+      "summary": "Subcontracted Purchase Requisition: Missing Peg/GI Info",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure peg/GI information is missing. Submit for approval. Check email is received and requisition is rejected due to missing info.",
+        "expected_result": "Purchase requisition rejected due to missing info and email is received stating rejection and reasons."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure pegging information is missing",
+          "data": "None",
+          "expected_result": "Pegging information is missing"
+        },
+        {
+          "step": 3,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Email stating purchase requisition is rejected due to PEG/GL info missing",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Purchase Requisition: Blank BP or Employee Supplier",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure business partner is blank or set to EMPloyee. Submit for approval. Check email is received and requisition is rejected after buyer review.",
+        "expected_result": "Purchase requisition rejected after buyer review and email is received stating rejection and reasons."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure business partner is blank or set to EMPloyee",
+          "data": "None",
+          "expected_result": "Business partner is blank or set to EMPloyee"
+        },
+        {
+          "step": 3,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Email stating purchase requisition is rejected due to blank BP or EMPloyee supplier",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Purchase Requisition: SubConDefault Not Linked to Production Order",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition using a SubConDefault item not linked to a production order. Submit for approval. Check email is received and requisition is rejected after buyer review.",
+        "expected_result": "Purchase requis, ition rejected after buyer review and email is received stating rejection and reasons."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with SubConDefault item not linked to production order",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Email stating purchase requisition is rejected due to SubConDefault not linked to production order",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Purchase Requisition: Multi-line with Subcontracted Items",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a purchase requisition with multiple lines, some of which are subcontracted items. Submit for approval. Check email is received and requisition is rejected after buyer review.",
+        "expected_result": "Purchase requisition rejected after buyer review and email is received stating rejection and reasons."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with multiple lines, some of which are subcontracted items",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Email stating purchase requisition is rejected due to multi-line with subcontracted items",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Standard Purchase Requisition Approval Flow",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a standard purchase requisition. Submit for approval through BPMS015. Approve through the workflow.",
+        "expected_result": "Purchase requisition is approved and proceeds through the workflow without issues."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create standard purchase requisition",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Approve through BPMS015 workflow",
+          "data": "None",
+          "expected_result": "Approval completed"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Requisition Auto-rejection for Missing Peg/GI Info",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a subcontracted purchase requisition with missing peg/GI information. Submit for approval. Check if auto-rejected and email received.",
+        "expected_result": "Requisition auto-rejected with email notification for missing peg/GI information."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create subcontracted purchase requisition with missing peg/GI information",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Email stating requisition auto-rejected due to missing peg/GI information",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Requisition Rejected After Buyer Review for Blank BP",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a subcontracted purchase requisition with blank business partner. Submit for approval. Check if rejected after buyer review and email received.",
+        "expected_result": "Requisition rejected after buyer review with email notification for blank business partner."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create subcontracted purchase requisition with blank business partner",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Email stating requisition rejected after buyer review due to blank BP",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Requisition Rejected After Buyer Review for SubConDefault Not Linked to Production Order",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a subcontracted purchase requisition using SubConDefault item not linked to production order. Submit for approval. Check if rejected after buyer review and email received.",
+        "expected_result": "Requisition rejected after buyer review with email notification for SubConDefault not linked to production order."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create subcontracted purchase requisition using SubConDefault item not linked to production order",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Email stating requisition rejected after buyer review due to SubConDefault not linked to production order",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Requisition Rejected After Buyer Review for Multi-line with Subcontracted Items",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a subcontracted purchase requisition with multiple lines, some of which are subcontracted items. Submit for approval. Check if rejected after buyer review and email received.",
+        "expected_result": "Requisition rejected after buyer review with email notification for multi-line with subcontracted items."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create subcontracted purchase requisition with multiple lines, some of which are subcontracted items",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Email stating requisition rejected after buyer review due to multi-line with subcontracted items",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    }
+  ]
+}

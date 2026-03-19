@@ -1,0 +1,110 @@
+[
+  {
+    "id": "TC-FUNC-001",
+    "type": "Functional",
+    "summary": "Subcontracted Requisition: Missing Peg/GI Information",
+    "expected_result": "Purchase requisition auto-rejected by BPMS015 due to missing peg/GI info. Rejection email received.",
+    "steps": [
+      "Go to Purchase requisition session (tdpur2600m000) and click new.",
+      "Create new requisition line with subcontracted item ZZZSPL-SUBCON-TOOL. Input quantity, price, receipt date, business partner, but leave pegging information (Project and Activity) fields blank.",
+      "Click on Actions and submit PRQ for approval -> PRQ submitted for approval",
+      "BPMS015 performs auto-rejection check. Requisition is auto-rejected due to missing Peg/GI information -> BPMS015 case rejected",
+      "Check email inbox for rejection notification stating purchase requisition rejected due to PEG/GI info missing -> Rejection email received with reason"
+    ],
+    "data": "None"
+  },
+  {
+    "id": "TC-FUNC-002",
+    "type": "Functional",
+    "summary": "Subcontracted Requisition: Blank BP or Employee Supplier",
+    "expected_result": "Purchase requisition rejected after buyer review by BPMS015 due to blank BP. Rejection email received.",
+    "steps": [
+      "Go to Purchase requisition session (tdpur2600m000) and click new.",
+      "Create new requisition line with subcontracted item ZZZSPL-SUBCON-VALVE. Input quantity, price, receipt date, but leave Business Partner field blank.",
+      "Click on Actions and submit PRQ for approval -> PRQ submitted for approval",
+      "Check email inbox for buyer review email. Go to Bizagi and input case number from email -> Bizagi case opened",
+      "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed.",
+      "BPMS015 performs validation check after buyer review. Requisition is rejected due to blank Business Partner -> BPMS015 case rejected",
+      "Check email inbox for rejection notification stating purchase requisition rejected due to blank BP -> Rejection email received with reason"
+    ],
+    "data": "None"
+  },
+  {
+    "id": "TC-FUNC-003",
+    "type": "Functional",
+    "summary": "Subcontracted Requisition: SubConDefault Items Not Linked to Production Orders",
+    "expected_result": "Purchase requisition rejected after buyer review by BPMS015 due to unlinked production order. Rejection email received.",
+    "steps": [
+      "Go to Purchase requisition session (tdpur2600m000) and click new.",
+      "Create new requisition line with SubConDefault item ZZZSPL-SUBCON-DEFAULT-01. Input quantity, price, receipt date, business partner, pegging info.",
+      "Ensure no corresponding production order exists in tisfc0501m000 for this subcontracted item.",
+      "Click on Actions and submit PRQ for approval -> PRQ submitted for approval",
+      "Check email inbox for buyer review email. Go to Bizagi and input case number from email -> Bizagi case opened",
+      "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed.",
+      "BPMS015 performs validation check after buyer review. Requisition is rejected because SubConDefault item is not linked to a production order -> BPMS015 case rejected",
+      "Check email inbox for rejection notification stating purchase requisition rejected due to unlinked production order -> Rejection email received with reason"
+    ],
+    "data": "None"
+  },
+  {
+    "id": "TC-FUNC-004",
+    "type": "Functional",
+    "summary": "Multi-line Requisition with Subcontracted Items",
+    "expected_result": "Purchase requisition rejected after buyer review by BPMS015 due to multi-line subcontracted items. Rejection email received.",
+    "steps": [
+      "Go to Purchase requisition session (tdpur2600m000) and click new.",
+      "Create first line with standard cost item ZZZCST. Input quantity, price, receipt date, business partner, pegging info.",
+      "Add second line with subcontracted item ZZZSPL-SUBCON-PIPE. Input quantity, price, receipt date, business partner, pegging info.",
+      "Click on Actions and submit PRQ for approval -> PRQ submitted for approval",
+      "Check email inbox for buyer review email. Go to Bizagi and input case number from email -> Bizagi case opened",
+      "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed.",
+      "BPMS015 performs validation check after buyer review. Requisition is rejected because it contains multiple lines with subcontracted items -> BPMS015 case rejected",
+      "Check email inbox for rejection notification stating purchase requisition rejected due to multi-line subcontracted items -> Rejection email received with reason"
+    ],
+    "data": "None"
+  },
+  {
+    "id": "TC-REG-001",
+    "type": "Regression",
+    "summary": "Standard Cost Purchase Requisition - 137 PO Conversion",
+    "expected_result": "Cost purchase requisition approved and converted to 137 series PO successfully",
+    "steps": [
+      "Go to Purchase requisition session (tdpur2600m000) and click new.",
+      "Create new requisition line. Input cost item (ZZZCST), quantity, price, confirmed receipt date, business partner, pegging information (Project and Activity). Save -> Requisition line created",
+      "Click on Actions and submit PRQ for approval -> PRQ submitted for approval",
+      "Check email inbox for buyer review email. Go to Bizagi and input case number from email -> Bizagi case opened",
+      "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed. Case sent for DOA approval",
+      "Complete DOA approval. Refresh Bizagi case and verify case completed with no outstanding actions -> BPMS015 case completed",
+      "Go back to Infor LN and refresh purchase requisition screen. Verify PRQ status is Approved -> PRQ status is Approved",
+      "Go to Bizagi and create a BWQ (BPMS002.1) case. Select buyer, tick purchase requisition tick box, click next -> BWQ case created",
+      "Select the purchase requisition with correct number. Select transfer against that record, click next -> Transfer initiated",
+      "Refresh the Bizagi case and verify completed with no actions remaining -> BWQ case completed",
+      "Go back to Infor LN and refresh PRQ. Verify status is Converted. Click requisition line > References > Linked Requisition Line Data (tdpur2502s000) -> PRQ converted. 137 PO number displayed",
+      "Open purchase order from (tdpur4100m000). Maintain and submit PO for approval -> PO submitted for approval",
+      "Complete DOA and supplier response. Open PO in Bizagi BPMS016, complete supplier response ACC -> PO is approved"
+    ],
+    "data": "None"
+  },
+  {
+    "id": "TC-REG-002",
+    "type": "Regression",
+    "summary": "Subcontracted Purchase Requisition - Valid Flow with Production Order Link",
+    "expected_result": "Valid subcontracted purchase requisition approved and converted to 197 series PO successfully",
+    "steps": [
+      "Go to Purchase requisition session (tdpur2600m000) and click new.",
+      "Create production order in tisfc0501m000. Maintain header details (warehouse, routing, dates). Add line with project/activity. Planning Line tab add task '341AR'. Actions > Subcontracting > Generate Subcontracting Documents -> Production order created",
+      "Find generated PRQ in tdpur2501m000. Maintain PRQ: Add Buyer, Purchase office POPS01. Submit -> PRQ submitted for approval",
+      "Check email inbox for buyer review email. Go to Bizagi and input case number from email -> Bizagi case opened",
+      "Open buyer review case. Select RFx required as No, Buyer review completed as Yes. Save and press Next -> Buyer Review completed. Case sent for DOA approval",
+      "Complete DOA approval. Refresh Bizagi case and verify case completed with no outstanding actions -> BPMS015 case completed",
+      "Go back to Infor LN and refresh purchase requisition screen. Verify PRQ status is Approved -> PRQ status is Approved",
+      "Go to Bizagi and create a BWQ (BPMS002.1) case. Select buyer, tick purchase requisition tick box, click next -> BWQ case created",
+      "Select the purchase requisition with correct number. Select transfer against that record, click next -> Transfer initiated",
+      "Refresh the Bizagi case and verify completed with no actions remaining -> BWQ case completed",
+      "Go back to Infor LN and refresh PRQ. Verify status is Converted. Click requisition line > References > Linked Requisition Line Data (tdpur2502s000) -> PRQ converted. 197 PO number displayed",
+      "Open purchase order from (tdpur4100m000). Maintain and submit PO for approval -> PO submitted for approval",
+      "Complete DOA and supplier response. Open PO in Bizagi BPMS016, complete supplier response ACC -> PO is approved"
+    ],
+    "data": "None"
+  }
+]

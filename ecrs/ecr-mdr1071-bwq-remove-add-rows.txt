@@ -1,0 +1,10 @@
+Title: Remove ability to add rows in Buyer Work Queue requisitions table (MDR-1071)
+Labels: Bizagi, Procurement, Buyer Work Queue
+Components: BPMS002.1
+
+Description:
+Requirement/Issue: The buyer work queue requisition table has a button which can allow users to add new rows and process the requisitions they enter that don't already appear in the table. (The reqs will already have to be at the "Approved" state first).
+
+Exact Change Required: Remove the ability to add new rows in the BWQ requisitions table.
+
+Benefit: Prevents users from manually adding and processing requisitions that should not appear in the BWQ table.

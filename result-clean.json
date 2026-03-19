@@ -1,0 +1,172 @@
+{
+  "mte_summary": "BPMS015 validation for subcontracted requisitions",
+  "mte_labels": [
+    "Bizagi",
+    "Procurement"
+  ],
+  "test_cases": [
+    {
+      "summary": "Subcontracted Purchase Requisition: Missing Peg/GI Info",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a Purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure peg/GI information is missing. Submit for approval. Check email is received and requisition is rejected due to missing info.",
+        "expected_result": "Purchase requisition rejected due to missing info and email is received stating rejection and reasons."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure pegging information is missing",
+          "data": "None",
+          "expected_result": "Pegging information is missing"
+        },
+        {
+          "step": 3,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Check email stating purchase requisition is rejected due to PEG/GL info missing",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Purchase Requisition: Blank BP/Employee Supplier",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a Purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure business partner or employee supplier is blank. Submit for approval. Check email is received and requisition is rejected after buyer review.",
+        "expected_result": "Purchase requisition rejected after buyer review and email is received stating rejection and reasons."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure business partner or employee supplier is blank",
+          "data": "None",
+          "expected_result": "Business partner/employee supplier is blank"
+        },
+        {
+          "step": 3,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Check email stating purchase requisition is rejected after buyer review",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Purchase Requisition: SubConDefault Not Linked to Production Order",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a Purchase requisition using a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Ensure SubConDefault item is not linked to any production order. Submit for approval. Check email is received and requisition is rejected with notification.",
+        "expected_result": "Purchase requisition rejected with email notification stating SubConDefault not linked to production order."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with item ZZZSPL-SUBCON-S09-TOOL",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Ensure SubConDefault item is not linked to any production order",
+          "data": "None",
+          "expected_result": "SubConDefault item not linked to production order"
+        },
+        {
+          "step": 3,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 4,
+          "action": "Check email stating purchase requisition is rejected due to SubConDefault not linked to production order",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Subcontracted Purchase Requisition: Multi-line with Subcontracted Items",
+      "test_type": "Functional",
+      "description": {
+        "scenario": "Create a Purchase requisition with multiple lines, one of which is a subcontracted item (ZZZSPL-SUBCON-S09-TOOL). Submit for approval. Check email is received and requisition is rejected with notification.",
+        "expected_result": "Purchase requisition rejected with email notification stating multi-line with subcontracted items."
+      },
+      "preconditions": "None",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create purchase requisition with multiple lines, one of which is a subcontracted item (ZZZSPL-SUBCON-S09-TOOL)",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Check email stating purchase requisition is rejected due to multi-line with subcontracted items",
+          "data": "None",
+          "expected_result": "Email received"
+        }
+      ]
+    },
+    {
+      "summary": "Standard Purchase Requisition Approval Flow",
+      "test_type": "Regression",
+      "description": {
+        "scenario": "Create a standard purchase requisition with valid peg/GI information and business partner. Submit for approval. Check approval process completes without rejection.",
+        "expected_result": "Purchase requisition approved through BPMS015 without rejection."
+      },
+      "preconditions": null,
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create standard purchase requisition with valid peg/GI information and business partner",
+          "data": "None",
+          "expected_result": "PRQ created"
+        },
+        {
+          "step": 2,
+          "action": "Submit for approval",
+          "data": "None",
+          "expected_result": "Submitted for approval"
+        },
+        {
+          "step": 3,
+          "action": "Check approval process completes without rejection",
+          "data": "None",
+          "expected_result": "Approval completed without rejection"
+        }
+      ]
+    }
+  ]
+}
