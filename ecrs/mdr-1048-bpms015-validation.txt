@@ -1,0 +1,18 @@
+Title: BPMS015 skipping some validation for sub-con requisitions
+Labels: Bizagi, Procurement, R2P
+
+Description:
+Subcontracting requisitions are skipping Project & Activity /GL checks, as well as Business Partner checks. This can result in approved sub-con req's with missing business partner and project & activity details and will silently fail to convert to a purchase order later on.
+
+The tech spec states the following which suggests the PEG checks are to happen before the sub-con check.
+
+All reqs that are not Pricing Only must have either the Peg information or the GL information. If neither is set, the req must be auto-rejected. Pricing Only reqs do not need this information
+The tech spec also states the following for BP's that also suggests that the check is to happen before the sub-con check (truncated) :
+
+If the req has a blank BP, then it should still be sent to Buyer Review....
+With these 2 requirements in mind, the idea will be to re-order the checks to be as follows after pricing:
+# PEG/GL
+# Work authorisation status:
+# BP check
+# Sub-con
+# Multi-line

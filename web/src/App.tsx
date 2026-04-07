@@ -51,6 +51,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import * as Collapsible from "@radix-ui/react-collapsible";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -154,8 +155,8 @@ export default function App() {
   // Results state
   const [activeTab, setActiveTab] = useState<"cases" | "json">("cases");
 
-  // Expand/collapse all
-  const [allExpanded, setAllExpanded] = useState(true);
+  // Expand/collapse all — increment to signal cards to sync
+  const [expandCollapseSignal, setExpandCollapseSignal] = useState<{ expanded: boolean; key: number }>({ expanded: true, key: 0 });
 
   // Editable result — local copy that the user can mutate
   const [editableResult, setEditableResult] = useState<TestGenerationResult | null>(null);
@@ -828,8 +829,9 @@ export default function App() {
                 onAddStep={handleAddStep}
                 onDeleteTestCase={handleDeleteTestCase}
                 onDuplicateTestCase={handleDuplicateTestCase}
-                allExpanded={allExpanded}
-                onToggleAllExpanded={() => setAllExpanded(!allExpanded)}
+                expandCollapseSignal={expandCollapseSignal}
+                onExpandAll={() => setExpandCollapseSignal(prev => ({ expanded: true, key: prev.key + 1 }))}
+                onCollapseAll={() => setExpandCollapseSignal(prev => ({ expanded: false, key: prev.key + 1 }))}
               />
             )}
           </div>
@@ -1015,8 +1017,9 @@ function ResultsView({
   onAddStep,
   onDeleteTestCase,
   onDuplicateTestCase,
-  allExpanded,
-  onToggleAllExpanded,
+  expandCollapseSignal,
+  onExpandAll,
+  onCollapseAll,
 }: {
   result: TestGenerationResult;
   activeTab: "cases" | "json";
@@ -1032,9 +1035,11 @@ function ResultsView({
   onAddStep: (caseIdx: number) => void;
   onDeleteTestCase: (caseIdx: number) => void;
   onDuplicateTestCase: (caseIdx: number) => void;
-  allExpanded: boolean;
-  onToggleAllExpanded: () => void;
+  expandCollapseSignal: { expanded: boolean; key: number };
+  onExpandAll: () => void;
+  onCollapseAll: () => void;
 }) {
+  const [allState, setAllState] = useState(true);
   const [showRawOutput, setShowRawOutput] = useState(false);
 
   return (
@@ -1115,10 +1120,17 @@ function ResultsView({
             variant="ghost"
             size="sm"
             className="text-xs"
-            onClick={onToggleAllExpanded}
+            onClick={() => {
+              if (allState) {
+                onCollapseAll();
+              } else {
+                onExpandAll();
+              }
+              setAllState(!allState);
+            }}
           >
             <ChevronsUpDown className="mr-1.5 h-3 w-3" />
-            {allExpanded ? "Collapse All" : "Expand All"}
+            {allState ? "Collapse All" : "Expand All"}
           </Button>
         )}
 
@@ -1167,7 +1179,7 @@ function ResultsView({
               key={idx}
               testCase={tc}
               index={idx}
-              forceExpanded={allExpanded}
+              expandCollapseSignal={expandCollapseSignal}
               onUpdateStep={(stepIdx, updated) => onUpdateStep(idx, stepIdx, updated)}
               onDeleteStep={(stepIdx) => onDeleteStep(idx, stepIdx)}
               onReorderSteps={(oldIndex, newIndex) => onReorderSteps(idx, oldIndex, newIndex)}
@@ -1387,7 +1399,7 @@ function formatTestCaseAsText(tc: TestCase, index: number): string {
 function TestCaseCard({
   testCase,
   index,
-  forceExpanded,
+  expandCollapseSignal,
   onUpdateStep,
   onDeleteStep,
   onReorderSteps,
@@ -1397,7 +1409,7 @@ function TestCaseCard({
 }: {
   testCase: TestCase;
   index: number;
-  forceExpanded: boolean;
+  expandCollapseSignal: { expanded: boolean; key: number };
   onUpdateStep: (stepIdx: number, updated: TestStep) => void;
   onDeleteStep: (stepIdx: number) => void;
   onReorderSteps: (oldIndex: number, newIndex: number) => void;
@@ -1405,11 +1417,16 @@ function TestCaseCard({
   onDelete: () => void;
   onDuplicate: () => void;
 }) {
-  const [localExpanded, setLocalExpanded] = useState(true);
-  const expanded = forceExpanded !== undefined ? forceExpanded : localExpanded;
+  const [expanded, setExpanded] = useState(true);
   const [editingStep, setEditingStep] = useState<{ step: TestStep; idx: number } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [deleteTestCaseConfirm, setDeleteTestCaseConfirm] = useState(false);
+  const [flash, setFlash] = useState<"duplicate" | "delete" | null>(null);
+
+  // Respond to expand/collapse all signal
+  useEffect(() => {
+    setExpanded(expandCollapseSignal.expanded);
+  }, [expandCollapseSignal.key]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -1443,25 +1460,30 @@ function TestCaseCard({
 
   return (
     <>
-      <Card>
-        <CardHeader className="pb-3">
+      <Collapsible.Root open={expanded} onOpenChange={setExpanded} asChild>
+      <Card className={`transition-colors duration-500 ${
+        flash === "duplicate" ? "ring-2 ring-primary/50 bg-primary/5" :
+        flash === "delete" ? "ring-2 ring-destructive/50 bg-destructive/5" : ""
+      }`}>
+        <CardHeader className="py-3 px-4">
           <div className="flex items-center justify-between gap-3">
+            <Collapsible.Trigger asChild>
             <div
-              className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none"
-              onClick={() => setLocalExpanded(!localExpanded)}
+              className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer select-none"
             >
               {expanded ? (
                 <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
               ) : (
                 <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               )}
-              <CardTitle className="text-sm truncate">
+              <CardTitle className="text-sm truncate leading-none">
                 <span className="text-muted-foreground/60 mr-2 font-mono text-xs">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 {testCase.summary}
               </CardTitle>
             </div>
+            </Collapsible.Trigger>
             <div className="flex items-center gap-2 shrink-0">
               <span className="text-xs text-muted-foreground">
                 {testCase.steps?.length ?? 0} steps
@@ -1497,6 +1519,8 @@ function TestCaseCard({
                 title="Duplicate test case"
                 onClick={(e) => {
                   e.stopPropagation();
+                  setFlash("duplicate");
+                  setTimeout(() => setFlash(null), 600);
                   onDuplicate();
                 }}
               >
@@ -1506,12 +1530,15 @@ function TestCaseCard({
                 variant="ghost"
                 size="sm"
                 className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                title="Delete test case"
+                title={deleteTestCaseConfirm ? "Click again to confirm" : "Delete test case"}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (deleteTestCaseConfirm) {
-                    onDelete();
-                    setDeleteTestCaseConfirm(false);
+                    setFlash("delete");
+                    setTimeout(() => {
+                      onDelete();
+                      setDeleteTestCaseConfirm(false);
+                    }, 300);
                   } else {
                     setDeleteTestCaseConfirm(true);
                     setTimeout(() => setDeleteTestCaseConfirm(false), 3000);
@@ -1528,7 +1555,7 @@ function TestCaseCard({
           </div>
         </CardHeader>
 
-        {expanded && (
+        <Collapsible.Content data-collapsible-content className="overflow-hidden">
           <CardContent className="pt-0 space-y-4">
             {/* Description */}
             <div className="rounded-md bg-muted/30 p-3 space-y-3">
@@ -1611,8 +1638,9 @@ function TestCaseCard({
               Add Step
             </Button>
           </CardContent>
-        )}
+        </Collapsible.Content>
       </Card>
+      </Collapsible.Root>
 
       {/* Edit Dialog */}
       <StepEditDialog
@@ -1752,13 +1780,16 @@ function JiraSettingsDialog({
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              SSL Certificate Path (PEM)
+              SSL Certificate Path (optional)
             </label>
             <Input
               value={draft.pemPath}
               onChange={(e) => update("pemPath", e.target.value)}
-              placeholder="BAE-Systems-Root-CA-UK-2015.pem"
+              placeholder="Leave empty to use system certificates"
             />
+            <p className="text-[10px] text-muted-foreground/60">
+              Only needed if the BAE root CA is not in the system certificate store
+            </p>
           </div>
 
           {/* Test connection result */}
