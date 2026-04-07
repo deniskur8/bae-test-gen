@@ -1,4 +1,3 @@
-// sync test
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import {
@@ -30,6 +29,10 @@ import {
   CheckCircle2,
   XCircle,
   Search,
+  Moon,
+  Sun,
+  ChevronsUpDown,
+  CopyPlus,
 } from "lucide-react";
 import {
   DndContext,
@@ -135,8 +138,24 @@ export default function App() {
   // Model info
   const [modelInfo, setModelInfo] = useState<{ family: string; parameter_size: string } | null>(null);
 
+  // Dark mode
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark]);
+
   // Results state
   const [activeTab, setActiveTab] = useState<"cases" | "json">("cases");
+
+  // Expand/collapse all
+  const [allExpanded, setAllExpanded] = useState(true);
 
   // Editable result — local copy that the user can mutate
   const [editableResult, setEditableResult] = useState<TestGenerationResult | null>(null);
@@ -365,6 +384,52 @@ export default function App() {
     []
   );
 
+  const handleDeleteTestCase = useCallback(
+    (caseIdx: number) => {
+      setEditableResult((prev) => {
+        if (!prev) return prev;
+        const next = JSON.parse(JSON.stringify(prev)) as TestGenerationResult;
+        next.test_cases.splice(caseIdx, 1);
+        return next;
+      });
+      toast.success("Test case deleted");
+    },
+    []
+  );
+
+  const handleDuplicateTestCase = useCallback(
+    (caseIdx: number) => {
+      setEditableResult((prev) => {
+        if (!prev) return prev;
+        const next = JSON.parse(JSON.stringify(prev)) as TestGenerationResult;
+        const copy = JSON.parse(JSON.stringify(next.test_cases[caseIdx]));
+        copy.summary = copy.summary + " (copy)";
+        next.test_cases.splice(caseIdx + 1, 0, copy);
+        return next;
+      });
+      toast.success("Test case duplicated");
+    },
+    []
+  );
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (!isLoading && ecrText.trim() && systemPrompt.trim()) {
+          handleGenerate();
+        }
+      }
+      if (e.key === "Escape" && isLoading) {
+        e.preventDefault();
+        cancel();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isLoading, ecrText, systemPrompt, handleGenerate, cancel]);
+
   const displayResult = editableResult ?? result;
   const funcCount = displayResult?.test_cases?.filter((t) => t.test_type === "Functional").length ?? 0;
   const regCount = displayResult?.test_cases?.filter((t) => t.test_type === "Regression").length ?? 0;
@@ -423,6 +488,15 @@ export default function App() {
               </>
             )}
             <Separator orientation="vertical" className="h-6 mx-1" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setDark(!dark)}
+              title={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -752,6 +826,10 @@ export default function App() {
                 onDeleteStep={handleDeleteStep}
                 onReorderSteps={handleReorderSteps}
                 onAddStep={handleAddStep}
+                onDeleteTestCase={handleDeleteTestCase}
+                onDuplicateTestCase={handleDuplicateTestCase}
+                allExpanded={allExpanded}
+                onToggleAllExpanded={() => setAllExpanded(!allExpanded)}
               />
             )}
           </div>
@@ -935,6 +1013,10 @@ function ResultsView({
   onDeleteStep,
   onReorderSteps,
   onAddStep,
+  onDeleteTestCase,
+  onDuplicateTestCase,
+  allExpanded,
+  onToggleAllExpanded,
 }: {
   result: TestGenerationResult;
   activeTab: "cases" | "json";
@@ -948,6 +1030,10 @@ function ResultsView({
   onDeleteStep: (caseIdx: number, stepIdx: number) => void;
   onReorderSteps: (caseIdx: number, oldIndex: number, newIndex: number) => void;
   onAddStep: (caseIdx: number) => void;
+  onDeleteTestCase: (caseIdx: number) => void;
+  onDuplicateTestCase: (caseIdx: number) => void;
+  allExpanded: boolean;
+  onToggleAllExpanded: () => void;
 }) {
   const [showRawOutput, setShowRawOutput] = useState(false);
 
@@ -1024,6 +1110,18 @@ function ResultsView({
           </button>
         </div>
 
+        {activeTab === "cases" && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs"
+            onClick={onToggleAllExpanded}
+          >
+            <ChevronsUpDown className="mr-1.5 h-3 w-3" />
+            {allExpanded ? "Collapse All" : "Expand All"}
+          </Button>
+        )}
+
         {/* Show full output toggle */}
         {rawOutput && (
           <Button
@@ -1069,10 +1167,13 @@ function ResultsView({
               key={idx}
               testCase={tc}
               index={idx}
+              forceExpanded={allExpanded}
               onUpdateStep={(stepIdx, updated) => onUpdateStep(idx, stepIdx, updated)}
               onDeleteStep={(stepIdx) => onDeleteStep(idx, stepIdx)}
               onReorderSteps={(oldIndex, newIndex) => onReorderSteps(idx, oldIndex, newIndex)}
               onAddStep={() => onAddStep(idx)}
+              onDelete={() => onDeleteTestCase(idx)}
+              onDuplicate={() => onDuplicateTestCase(idx)}
             />
           ))}
         </div>
@@ -1266,24 +1367,49 @@ function StepEditDialog({
 // ---------------------------------------------------------------------------
 // Test Case Card
 // ---------------------------------------------------------------------------
+function formatTestCaseAsText(tc: TestCase, index: number): string {
+  const lines: string[] = [];
+  lines.push(`Test Case ${index + 1}: ${tc.summary}`);
+  lines.push(`Type: ${tc.test_type}`);
+  if (tc.description?.scenario) lines.push(`Scenario: ${tc.description.scenario}`);
+  if (tc.description?.expected_result) lines.push(`Expected Result: ${tc.description.expected_result}`);
+  if (tc.preconditions) lines.push(`Preconditions: ${tc.preconditions}`);
+  lines.push("");
+  lines.push("Steps:");
+  (tc.steps ?? []).forEach((s) => {
+    lines.push(`  ${s.step}. ${s.action}`);
+    if (s.data && s.data !== "None") lines.push(`     Data: ${s.data}`);
+    lines.push(`     Expected: ${s.expected_result}`);
+  });
+  return lines.join("\n");
+}
+
 function TestCaseCard({
   testCase,
   index,
+  forceExpanded,
   onUpdateStep,
   onDeleteStep,
   onReorderSteps,
   onAddStep,
+  onDelete,
+  onDuplicate,
 }: {
   testCase: TestCase;
   index: number;
+  forceExpanded: boolean;
   onUpdateStep: (stepIdx: number, updated: TestStep) => void;
   onDeleteStep: (stepIdx: number) => void;
   onReorderSteps: (oldIndex: number, newIndex: number) => void;
   onAddStep: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
 }) {
-  const [expanded, setExpanded] = useState(true);
+  const [localExpanded, setLocalExpanded] = useState(true);
+  const expanded = forceExpanded !== undefined ? forceExpanded : localExpanded;
   const [editingStep, setEditingStep] = useState<{ step: TestStep; idx: number } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [deleteTestCaseConfirm, setDeleteTestCaseConfirm] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -1318,18 +1444,18 @@ function TestCaseCard({
   return (
     <>
       <Card>
-        <CardHeader
-          className="pb-3 cursor-pointer select-none"
-          onClick={() => setExpanded(!expanded)}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-2.5">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between gap-3">
+            <div
+              className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none"
+              onClick={() => setLocalExpanded(!localExpanded)}
+            >
               {expanded ? (
-                <ChevronDown className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
               ) : (
-                <ChevronRight className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               )}
-              <CardTitle className="text-sm">
+              <CardTitle className="text-sm truncate">
                 <span className="text-muted-foreground/60 mr-2 font-mono text-xs">
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -1350,6 +1476,54 @@ function TestCaseCard({
               >
                 {testCase.test_type}
               </Badge>
+              <Separator orientation="vertical" className="h-4" />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                title="Copy test case"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(formatTestCaseAsText(testCase, index));
+                  toast.success("Test case copied");
+                }}
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                title="Duplicate test case"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDuplicate();
+                }}
+              >
+                <CopyPlus className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                title="Delete test case"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (deleteTestCaseConfirm) {
+                    onDelete();
+                    setDeleteTestCaseConfirm(false);
+                  } else {
+                    setDeleteTestCaseConfirm(true);
+                    setTimeout(() => setDeleteTestCaseConfirm(false), 3000);
+                  }
+                }}
+              >
+                {deleteTestCaseConfirm ? (
+                  <Check className="h-3 w-3 text-destructive" />
+                ) : (
+                  <Trash2 className="h-3 w-3" />
+                )}
+              </Button>
             </div>
           </div>
         </CardHeader>

@@ -76,7 +76,7 @@ const apiPlugin = () => ({
             const url = new URL(`${baseUrl}/rest/api/2/myself`);
 
             import("node:https").then(({ default: https }) => {
-              const pemFullPath = path.resolve(__dirname, "..", pemPath || "BAE-Systems-Root-CA-UK-2015.pem");
+              const pemFullPath = path.isAbsolute(pemPath || "") ? pemPath : path.resolve(__dirname, "..", pemPath || "BAE-Systems-Root-CA-UK-2015.pem");
               const options: import("node:https").RequestOptions = {
                 hostname: url.hostname,
                 port: url.port || 443,
@@ -128,7 +128,7 @@ const apiPlugin = () => ({
             const payload = JSON.stringify(issue);
 
             import("node:https").then(({ default: https }) => {
-              const pemFullPath = path.resolve(__dirname, "..", pemPath || "BAE-Systems-Root-CA-UK-2015.pem");
+              const pemFullPath = path.isAbsolute(pemPath || "") ? pemPath : path.resolve(__dirname, "..", pemPath || "BAE-Systems-Root-CA-UK-2015.pem");
               const options: import("node:https").RequestOptions = {
                 hostname: url.hostname,
                 port: url.port || 443,
@@ -240,7 +240,7 @@ const apiPlugin = () => ({
             });
 
             import("node:https").then(({ default: https }) => {
-              const pemFullPath = path.resolve(__dirname, "..", pemPath || "BAE-Systems-Root-CA-UK-2015.pem");
+              const pemFullPath = path.isAbsolute(pemPath || "") ? pemPath : path.resolve(__dirname, "..", pemPath || "BAE-Systems-Root-CA-UK-2015.pem");
               const options: import("node:https").RequestOptions = {
                 hostname: url.hostname,
                 port: url.port || 443,
