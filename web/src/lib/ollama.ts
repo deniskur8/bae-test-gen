@@ -305,7 +305,7 @@ export async function generateTestCasesStream(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "bae-test-gen",
+      model: "qwen3.5:9b",
       messages: [{ role: "user", content: fullPrompt }],
       stream: true,
       options: {

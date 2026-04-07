@@ -7,6 +7,7 @@ export function useGenerate() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [finalElapsed, setFinalElapsed] = useState<number | null>(null);
   const [streamText, setStreamText] = useState("");
   const [rawOutput, setRawOutput] = useState<string | null>(null);
   const [truncated, setTruncated] = useState(false);
@@ -19,6 +20,7 @@ export function useGenerate() {
       setError(null);
       setResult(null);
       setElapsed(0);
+      setFinalElapsed(null);
       setStreamText("");
       setRawOutput(null);
       setTruncated(false);
@@ -43,7 +45,7 @@ export function useGenerate() {
         );
         setResult(parseResult.data);
         setTruncated(parseResult.truncated);
-        setRawOutput(null);
+        setRawOutput(finalStreamText || null);
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") {
           setError("Generation cancelled");
@@ -56,6 +58,9 @@ export function useGenerate() {
       } finally {
         setIsLoading(false);
         if (timerRef.current) clearInterval(timerRef.current);
+        const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
+        setElapsed(totalSeconds);
+        setFinalElapsed(totalSeconds);
       }
     },
     []
@@ -69,10 +74,11 @@ export function useGenerate() {
     setResult(null);
     setError(null);
     setElapsed(0);
+    setFinalElapsed(null);
     setStreamText("");
     setRawOutput(null);
     setTruncated(false);
   }, []);
 
-  return { result, isLoading, error, elapsed, streamText, rawOutput, truncated, generate, cancel, reset };
+  return { result, isLoading, error, elapsed, finalElapsed, streamText, rawOutput, truncated, generate, cancel, reset };
 }
